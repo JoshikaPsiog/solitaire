@@ -1,0 +1,99 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: 	#8B0000;
+  color: 	#FFD700;
+  text-align: center;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#game-board {
+  margin: 20px auto;
+  width: 90%;
+  max-width: 1000px;
+}
+
+.top-row {
+  display: flex;
+  justify-content:space-between;
+  margin-bottom: 30px;
+  
+}
+
+.pile {
+  width: 80px;
+  height: 120px;
+  border: 2px solid #FFFFFF; 
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pile:hover {
+  transform: scale(1.25);
+  box-shadow: 0 12px 12px rgba(0, 0, 0, 0.6);
+}
+
+.foundations {
+  display: flex;
+  gap: 12px;
+}
+
+.tableau {
+  display: flex;
+  justify-content:center;
+  gap: 30px;
+}
+#foundation-1,#foundation-2,#foundation-3,#foundation-4{
+   width: 80px;
+  height: 120px;
+  border: 2px solid #ffcc00; 
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  transition:cubic-bezier(0.895, 0.03, 0.685, 0.22) 
+}
+#stock,#waste{
+  border: 2px solid #ffcc00; 
+  border-radius: 10px;
+  transition: all 0.5s ease-in-out;
+  position:unset;
+}
+.card {
+  width: 80px;
+  height: 120px;
+  border-radius: 8px;
+  font-weight: bold;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card.face-up {
+  background: #ffffff;
+  color: #222;
+  border: 2px solid #ff3366; 
+} */
+
+.card.face-down {
+  background: linear-gradient(135deg, #00c6ff, #0072ff); 
+  border: 2px solid #00e6e6;
+  color: transparent;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.6);
+}

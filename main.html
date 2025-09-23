@@ -1,38 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+     
   <meta charset="UTF-8">
   <title>SOLITAIRE</title>
   <link rel="stylesheet" href="main.css">
 </head>
 <body>
+    <!-- WIN POPUP -->
+
+
   <h1>Solitaire</h1>
   <div id="game-board">
 
     <div class="top-row">
+       
+
       <div id="stock" class="pile">Deck</div>
       <div id="waste" class="pile">Waste</div>
       
+    
       <div class="foundations">
-        <div class="pile" id="foundation-1"></div>
-        <div class="pile" id="foundation-2"></div>
-        <div class="pile" id="foundation-3"></div>
-        <div class="pile" id="foundation-4"></div>
+        <div class="pile" id="foundation-1">A♠️</div>
+        <div class="pile" id="foundation-2">A♦️</div>
+        <div class="pile" id="foundation-3">A♣️</div>
+        <div class="pile" id="foundation-4">A♥️</div>
       </div>
+       <button id="undoBtn">Undo</button>
     </div>
 
-    <div class="tableau">
-      <div class="pile" id="column-1"></div>
+    <div class="tableau" >
+      <div class="pile" id="column-1" ></div>
       <div class="pile" id="column-2"></div>
       <div class="pile" id="column-3"></div>
       <div class="pile" id="column-4"></div>
       <div class="pile" id="column-5"></div>
       <div class="pile" id="column-6"></div>
       <div class="pile" id="column-7"></div>
+
     </div>
 
   </div>
+<div id="winPopup">
+  <h1 class="winText">🎉 Congratulations! You Won! 🎉</h1>
+  <button class="restartBtn" onclick="restartGame()">Restart</button>
+</div>
 
-  <script src="code.js"></script>
+
+  <script src="code.js">
+    
+  </script>
+
 </body>
 </html>

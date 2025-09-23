@@ -1,7 +1,7 @@
 body {
   font-family: 'Segoe UI', sans-serif;
-  background: 	#8B0000;
-  color: 	#FFD700;
+  background: #550101;
+  color: #FFD700;
   text-align: center;
   margin: 0;
   min-height: 100vh;
@@ -14,86 +14,227 @@ body {
   width: 90%;
   max-width: 1000px;
 }
-
 .top-row {
+  padding: 10px;
   display: flex;
-  justify-content:space-between;
+  justify-content: space-between;
   margin-bottom: 30px;
-  
 }
 
 .pile {
   width: 80px;
-  height: 120px;
-  border: 2px solid #FFFFFF; 
+  height: 120;
+  /* border: 2px solid #FFD700; */
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.15);
+  /* background: rgba(255, 255, 255, 0.15); */
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  padding-top: 5px;
+  position: relative;   
+  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); */
+  margin: 0 5px;
+  /* overflow: visible; */
 }
 
 .pile:hover {
-  transform: scale(1.25);
-  box-shadow: 0 12px 12px rgba(0, 0, 0, 0.6);
+  transform: scale(1.1);
 }
 
 .foundations {
   display: flex;
   gap: 12px;
 }
-
 .tableau {
+  padding: 10px;
   display: flex;
-  justify-content:center;
-  gap: 30px;
+  justify-content: center;
+  gap: 50px;
 }
-#foundation-1,#foundation-2,#foundation-3,#foundation-4{
-   width: 80px;
+#foundation-1.pile, #foundation-2.pile, #foundation-3.pile, #foundation-4.pile {
+  padding: 10px;
+  width: 80px;
   height: 120px;
-  border: 2px solid #ffcc00; 
+  border: 2px solid #ffcc00;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: center;
+  position: relative;  
   justify-content: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  transition:cubic-bezier(0.895, 0.03, 0.685, 0.22) 
+  transition: cubic-bezier(0.895, 0.03, 0.685, 0.22);
+  margin: 0 5px;
+  overflow: visible;
 }
-#stock,#waste{
-  border: 2px solid #ffcc00; 
-  border-radius: 10px;
-  transition: all 0.5s ease-in-out;
-  position:unset;
+#foundation-1, #foundation-2, #foundation-3, #foundation-4 {
+  position: relative;  /* Make sure container is relative */
+  width: 80px;
+  height: 120px;
 }
 .card {
   width: 80px;
   height: 120px;
-  border-radius: 8px;
-  font-weight: bold;
+  border-radius: 10px;
+  border: 2px solid #FFFFFF;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
   display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  font-size: 16px;
+  font-weight: bold;
+  user-select: none;
+  background-color: white;
+  transition: transform 0.2s ease;
+  margin-top: -80px; /* overlapping for tableau */
+  position: relative;
+}
+#foundation-1 .card,
+#foundation-2 .card,
+#foundation-3 .card,
+#foundation-4 .card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 80px;
+  height: 120px;
+  text-decoration: double;
+  /* optionally, add cursor */
+  cursor: default;
+}
+
+#stock .card {
+    position: absolute;
+    top: 0;
+  left: 0;
+  margin-top: 0;     
+  z-index: 1;  
+}
+#waste .card {
+   margin-top: 0;          
+  position: absolute;     
+  top: 0;                
+}
+#waste .card:nth-child(1) { left: 0px; }
+#waste .card:nth-child(2) { left: 20px; }
+#waste .card:nth-child(3) { left: 40px; }
+
+#waste.pile{
+     width: 80px;
+  height: 120;
+  border: 2px solid #FFD700;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  padding-top: 5px;
+  position: relative;   
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  margin: 0 5px;
+  /* overflow: visible; */
 }
-
-.card.face-up {
-  background: #ffffff;
-  color: #222;
-  border: 2px solid #ff3366; 
-} */
-
-.card.face-down {
-  background: linear-gradient(135deg, #00c6ff, #0072ff); 
-  border: 2px solid #00e6e6;
+#stock.pile{
+    width: 80px;
+  height: 120;
+  border: 2px solid #FFD700;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 5px;
+  position: relative;   
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  margin: 0 5px;
+}
+.face-up {
+  background-color: white;
+  color: black;
+  border: 2px solid #ff3366;
+  z-index: 2;
+}
+.face-down {
+  background: linear-gradient(135deg, #ac2626, #550101);
+  border: 2px solid #FFD700;
   color: transparent;
+  z-index: 1;
 }
-
+/* Top-left rank/suit for face-up cards */
+.card .rank-suit {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  font-size: 14px;
+  font-weight: bold;
+  color: black;
+}
+.pile .card:first-child {
+  margin-top: 0;  
+}
 .card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.6);
+}
+#tableau .card {
+  margin-top: -80px;      
+  position: relative;
+}
+
+#winPopup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  padding: 40px 60px;
+  text-align: center;
+  display: none; /* Hide initially */
+  z-index: 1000;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Congratulation text */
+.winText {
+  font-size: 1.8rem;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+/* Styled restart button */
+.restartBtn {
+  padding: 12px 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  background: #dd4e4e;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.restartBtn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+#undoBtn {
+  width: 100px;   /* fixed width */
+  height: 35px;   /* fixed height */
+  font-size: 14px;
+  background: #ac2626;
+ border: 2px solid #FFD700;
+  border-radius: 10px;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+
+#undoBtn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
 }

@@ -17,7 +17,7 @@ body {
 .top-row {
   padding: 10px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   margin-bottom: 30px;
 }
 
@@ -44,6 +44,7 @@ body {
 .foundations {
   display: flex;
   gap: 12px;
+  margin-left: 50px;
 }
 .tableau {
   padding: 10px;
@@ -68,7 +69,7 @@ body {
   overflow: visible;
 }
 #foundation-1, #foundation-2, #foundation-3, #foundation-4 {
-  position: relative;  /* Make sure container is relative */
+  position: relative;  
   width: 80px;
   height: 120px;
 }
@@ -86,7 +87,7 @@ body {
   user-select: none;
   background-color: white;
   transition: transform 0.2s ease;
-  margin-top: -80px; /* overlapping for tableau */
+  margin-top: -80px; 
   position: relative;
 }
 #foundation-1 .card,
@@ -99,7 +100,7 @@ body {
   width: 80px;
   height: 120px;
   text-decoration: double;
-  /* optionally, add cursor */
+
   cursor: default;
 }
 
@@ -120,8 +121,8 @@ body {
 #waste .card:nth-child(3) { left: 40px; }
 
 #waste.pile{
-     width: 80px;
-  height: 120;
+     width: 200px;
+  height: 200;
   border: 2px solid #FFD700;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.15);
@@ -132,10 +133,11 @@ body {
   position: relative;   
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   margin: 0 5px;
-  /* overflow: visible; */
+    margin-right: 40px;
+
 }
 #stock.pile{
-    width: 80px;
+    width: 200px;
   height: 120;
   border: 2px solid #FFD700;
   border-radius: 10px;
@@ -147,6 +149,7 @@ body {
   position: relative;   
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   margin: 0 5px;
+  margin-right: 50px;
 }
 .face-up {
   background-color: white;
@@ -160,7 +163,7 @@ body {
   color: transparent;
   z-index: 1;
 }
-/* Top-left rank/suit for face-up cards */
+
 .card .rank-suit {
   position: absolute;
   top: 5px;
@@ -191,19 +194,18 @@ body {
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
   padding: 40px 60px;
   text-align: center;
-  display: none; /* Hide initially */
+  display: none; 
   z-index: 1000;
   font-family: 'Arial', sans-serif;
 }
 
-/* Congratulation text */
 .winText {
   font-size: 1.8rem;
   margin-bottom: 25px;
   color: #333;
 }
 
-/* Styled restart button */
+
 .restartBtn {
   padding: 12px 30px;
   font-size: 1rem;
@@ -221,8 +223,8 @@ body {
   box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
 #undoBtn {
-  width: 100px;   /* fixed width */
-  height: 35px;   /* fixed height */
+  width: 100px;   
+  height: 35px;   
   font-size: 14px;
   background: #ac2626;
  border: 2px solid #FFD700;
@@ -238,19 +240,27 @@ body {
   transform: scale(1.05);
   box-shadow: 0 6px 15px rgba(0,0,0,0.2);
 }
+
+
 #timerDisplay {
     font-weight: bold;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    /* box-shadow: 0 2px 10px rgba(0,0,0,0.1); */
     letter-spacing: 1px;
+    font-size:1.2rem; 
+      margin-left: 8px; 
+      color: #FFD700; 
+      /* background:rgba(0,0,0,0.15); */
+       padding:6px 18px; 
+       border-radius:10px;
 }
-.pile {
+/* .pile {
     transition: box-shadow 0.2s, transform 0.2s;
-}
-.pile:hover {
+} */
+/* .pile:hover {
     box-shadow: 0 8px 30px rgba(255,215,0,0.12);
     border-color: #ffd700;
     background: rgba(255, 255, 255, 0.18);
-}
+} */
 .card {
     transition: box-shadow 0.2s, background 0.2s, transform 0.2s;
 }

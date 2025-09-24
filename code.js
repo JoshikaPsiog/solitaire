@@ -36,122 +36,230 @@ function dealCards(deck) {
   let stock = deck.slice(deckIndex);
   return { tableau, stock };
 }
- let { tableau, stock } = dealCards(deck);
+ 
+let { tableau, stock } = dealCards(deck);
 let waste = [];
-let foundationPiles = [[],[],[],[]];
+
 let draggedCard = null;
 let draggedStack = [];
-let moveHistory = []; 
+ 
 
-function createCardElement(card){
-  const div = document.createElement('div');
-  div.classList.add('card', card.faceUp?'face-up':'face-down');
-  div.style.position='relative';
-  if(card.faceUp){
+function createCardElement(card) {
+  const cardDiv = document.createElement('div');
+  cardDiv.classList.add('card', card.faceUp ? 'face-up' : 'face-down');
+cardDiv.style.position = 'relative';
+  if (card.faceUp) {
     const span = document.createElement('span');
+    span.classList.add('rank-suit');
     span.textContent = `${card.number}${card.face}`;
-    span.style.color = card.color;
-    div.appendChild(span);
-
-    div.setAttribute('draggable', true);
-    div.addEventListener('dragstart', (e)=>{
+span.style.color = (card.color === 'red') ? 'red' : 'black';
+    cardDiv.appendChild(span);
+    cardDiv.setAttribute('draggable', true);
+    cardDiv.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setDragImage(cardDiv, 40, 60);
       draggedCard = card;
-      for(let col=0;col<7;col++){
+      for (let col = 0; col < 7; col++) {
         const idx = tableau[col].indexOf(card);
-        if(idx!==-1){ draggedStack = tableau[col].slice(idx); return; }
+        if (idx !== -1) {
+          draggedStack = tableau[col].slice(idx);
+          return;
+        }
       }
       draggedStack = [card];
     });
-    div.addEventListener('dragend', ()=>{
+    cardDiv.addEventListener('dragend', () => {
       draggedCard = null;
       draggedStack = [];
     });
   }
-  return div;
+  return cardDiv;
 }
-function renderTableau(tableau){
-  for(let i=0;i<7;i++){
-    const col = document.getElementById(`column-${i+1}`);
-    col.innerHTML='';
-    tableau[i].forEach(card=>{
-      const el = createCardElement(card);
-      col.appendChild(el);
+ 
+
+function renderTableau(tableau) {
+  for (let i = 0; i < tableau.length; i++) {
+    const column = document.getElementById(`column-${i + 1}`);
+    column.innerHTML = '';
+    tableau[i].forEach(card => {
+      const cardEl = createCardElement(card);
+      column.appendChild(cardEl);
     });
   }
   addDragDropListeners();
 }
-
-function renderStock(stock){
-  const stockDiv=document.getElementById('stock');
-  stockDiv.innerHTML='';
-  stock.forEach((card,i)=>{
-    const div=document.createElement('div');
-    div.classList.add('card','face-down');
-    div.style.position='absolute';
-    div.style.top=`${i*0.5}px`;
-    div.style.left=`${i*0.5}px`;
-    stockDiv.appendChild(div);
+ 
+function renderStock(stock) {
+  const stockDiv = document.getElementById('stock');
+  stockDiv.innerHTML = '';
+  stock.forEach((card, index) => {
+    const cardEl = document.createElement('div');
+    cardEl.classList.add('card', 'face-down');
+cardEl.style.position = 'absolute';
+cardEl.style.top = `${index * 0.5}px`;
+cardEl.style.left = `${index * 0.5}px`;
+    stockDiv.appendChild(cardEl);
   });
 }
-
-function renderWaste(waste){
-  const wasteDiv=document.getElementById('waste');
-  wasteDiv.innerHTML='';
-  wasteDiv.style.position='relative';
-  const start = Math.max(0, waste.length-3);
-  const visible = waste.slice(start);
-  visible.forEach((card,i)=>{
-    const div = createCardElement(card);
-    div.style.position='absolute';
-    div.style.left = `${i*20}px`;
-    div.style.top='0px';
-    div.style.zIndex=i;
-    wasteDiv.appendChild(div);
+ 
+function renderWaste(waste) {
+  const wasteDiv = document.getElementById('waste');
+  wasteDiv.innerHTML = '';
+wasteDiv.style.position = 'relative';
+  const start = Math.max(0, waste.length - 3);
+  const visibleCards = waste.slice(start);
+  visibleCards.forEach((card, index) => {
+    const cardEl = createCardElement(card);
+cardEl.style.position = 'absolute';
+cardEl.style.left = `${index * 20}px`;
+cardEl.style.top = '0px';
+cardEl.style.zIndex = index;
+    if (index === visibleCards.length - 1) {
+      cardEl.setAttribute('draggable', true);
+      cardEl.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setDragImage(cardEl, 40, 60);
+        draggedCard = card;
+        draggedStack = [card];
+      });
+      cardEl.addEventListener('dragend', () => {
+        draggedCard = null;
+        draggedStack = [];
+      });
+    }
+    wasteDiv.appendChild(cardEl);
   });
 }
-
-function renderFoundations(){
-  for(let i=0;i<4;i++){
-    const fd = document.getElementById(`foundation-${i+1}`);
-    fd.innerHTML='';
-    foundationPiles[i].forEach(card=>{
-      const div = createCardElement(card);
-      fd.appendChild(div);
+ let foundationPiles = [[], [], [], []];
+function renderFoundations() {
+  for (let i = 0; i < 4; i++) {
+    const foundationDiv = document.getElementById(`foundation-${i + 1}`);
+    foundationDiv.innerHTML = '';
+    const pile = foundationPiles[i];
+    pile.forEach(card => {
+      const cardEl = createCardElement(card);
+      foundationDiv.appendChild(cardEl);
     });
   }
 }
-function addDragDropListeners(){
-  for(let i=1;i<=7;i++){
-    const col = document.getElementById(`column-${i}`);
-    col.addEventListener('dragover', e=>e.preventDefault());
-    col.addEventListener('drop', e=>{
+ let gameWon = false;  
+function checkWin() {
+  if (!gameWon && foundationPiles.every(pile => pile.length === 13)) {
+    gameWon = true;
+    document.getElementById("winPopup").style.display = "flex";
+
+    // Hide popup and restart after 5 seconds
+    setTimeout(() => {
+      document.getElementById("winPopup").style.display = "none";
+      restartGame();
+    }, 5000);
+  }
+}
+function restartGame() {
+  // your restart logic here (reshuffle, redeal, etc.)
+  gameWon = false;
+  document.getElementById("winPopup").style.display = "none";
+  window.onload = function () {
+  renderTableau(tableau);
+  renderStock(stock);
+  renderWaste(waste);
+  renderFoundations();
+  setupFoundationDrops();
+};
+}
+
+ 
+document.getElementById('stock').addEventListener('click', () => {
+  if (stock.length === 0) {
+    stock = waste.reverse().map(card => {
+      card.faceUp = false;
+      return card;
+    });
+    waste = [];
+  } else {
+    const card = stock.shift();
+    card.faceUp = true;
+    waste.push(card);
+  }
+  renderStock(stock);
+  renderWaste(waste);
+});
+ 
+function addDragDropListeners() {
+  for (let i = 1; i <= 7; i++) {
+    const column = document.getElementById(`column-${i}`);
+    column.addEventListener('dragover', (e) => e.preventDefault());
+    column.addEventListener('drop', (e) => {
       e.preventDefault();
-      if(!draggedCard) return;
-      const toColIdx=i-1;
-      let fromColIdx=-1, fromWaste=false;
-      for(let c=0;c<7;c++){
-        const idx = tableau[c].indexOf(draggedCard);
-        if(idx!==-1){ fromColIdx=c; break; }
-      }
-      if(fromColIdx===-1){
-        if(waste.indexOf(draggedCard)!==-1) fromWaste=true;
-        else return;
-      }
-      if(fromWaste) waste = waste.filter(c=>c!==draggedCard);
-      else{
-        const idx = tableau[fromColIdx].indexOf(draggedCard);
-        tableau[fromColIdx].splice(idx);
-        if(tableau[fromColIdx].length>0){
-          const last = tableau[fromColIdx][tableau[fromColIdx].length-1];
-          if(!last.faceUp) last.faceUp=true;
+      if (!draggedCard) return;
+
+      const toColumnIndex = i - 1;
+      const toColumn = tableau[toColumnIndex];
+      const topCard = toColumn[toColumn.length - 1];
+
+      let fromColumnIndex = -1;
+      let cardIndex = -1;
+      let fromWaste = false;
+
+      // Find source column
+      for (let col = 0; col < 7; col++) {
+        const idx = tableau[col].indexOf(draggedCard);
+        if (idx !== -1) {
+          fromColumnIndex = col;
+          cardIndex = idx;
+          break;
         }
       }
-      tableau[toColIdx] = tableau[toColIdx].concat(draggedStack);
+
+      // If not from tableau, check waste
+      if (fromColumnIndex === -1) {
+        const idx = waste.indexOf(draggedCard);
+        if (idx !== -1) {
+          fromWaste = true;
+        } else return;
+      }
+
+      // Check tableau placement rules (same as your rule)
+      const draggedValue = numbers.indexOf(draggedCard.number);
+      if (!topCard) {
+        if (draggedCard.number == '') return;
+      } else {
+        const topValue = numbers.indexOf(topCard.number);
+        if (draggedCard.color !== topCard.color) return;
+        if (draggedValue !== topValue - 1) return;
+      }
+
+      // Remove from source — track if we flipped a card
+      let wasFlipped = false;
+      let flippedCard = null;
+
+      if (fromWaste) {
+        waste = waste.filter(c => c !== draggedCard);
+      } else {
+        // remove the moved stack from source column
+        tableau[fromColumnIndex].splice(cardIndex);
+
+        // if there is now a new last card, and it was face-down, flip it and record
+        if (tableau[fromColumnIndex].length > 0) {
+          const last = tableau[fromColumnIndex][tableau[fromColumnIndex].length - 1];
+          if (!last.faceUp) {
+            last.faceUp = true;
+            wasFlipped = true;
+            flippedCard = last; // save reference so undo can flip it back
+          }
+        }
+      }
+
+      // Add to destination
+      tableau[toColumnIndex] = tableau[toColumnIndex].concat(draggedStack);
+
+      // Save move to history (including flipped info)
       moveHistory.push({
-        stack: draggedStack.slice(),
-        from: fromWaste?-1:fromColIdx,
-        to: toColIdx,
-        fromWaste: fromWaste
+        stack: [...draggedStack],
+        from: fromWaste ? "waste" : "tableau",
+        fromIndex: fromWaste ? -1 : fromColumnIndex,
+        to: "tableau",
+        toIndex: toColumnIndex,
+        flipped: wasFlipped,
+        flippedCard: flippedCard || null
       });
 
       renderTableau(tableau);
@@ -159,174 +267,142 @@ function addDragDropListeners(){
     });
   }
 }
-document.getElementById('stock').addEventListener('click', ()=>{
-  if(stock.length===0){
-    stock = waste.reverse().map(c=>{ c.faceUp=false; return c; });
-    waste=[];
-  } else{
-    const card = stock.shift();
-    card.faceUp=true;
-    waste.push(card);
-    moveHistory.push({
-      stack: [card],
-      from: 'stock',
-      to: 'waste',
-      fromWaste:false
-    });
-  }
-  renderStock(stock);
-  renderWaste(waste);
+
+ 
+function setupFoundationDrops() {
+  for (let i = 1; i <= 4; i++) {
+    const foundation = document.getElementById(`foundation-${i}`);
+    foundation.addEventListener('dragover', (e) => e.preventDefault());
+    foundation.addEventListener('drop', (e) => {
+      e.preventDefault();
+      if (!draggedCard) return;
+      const pile = foundationPiles[i - 1];
+      if (pile.length === 0) {
+        if (draggedCard.number !== 'A') return;
+      } else {
+        const topCard = pile[pile.length - 1];
+        const draggedValue = numbers.indexOf(draggedCard.number);
+        const topValue = numbers.indexOf(topCard.number);
+        if (draggedCard.face !== topCard.face) return;
+        if (draggedValue !== topValue + 1) return;
+      }
+      let removed = false;
+      for (let col = 0; col < 7; col++) {
+        const idx = tableau[col].indexOf(draggedCard);
+        if (idx !== -1) {
+          tableau[col].splice(idx, 1);
+          if (tableau[col].length > 0) {
+            const last = tableau[col][tableau[col].length - 1];
+            if (!last.faceUp) last.faceUp = true;
+          }
+          removed = true;
+          break;
+        }
+      }
+      if (!removed) {
+        const idx = waste.indexOf(draggedCard);
+        if (idx !== -1) waste.splice(idx, 1);
+      }
+      foundationPiles[i - 1].push(draggedCard);
+
+// Save move for undo
+moveHistory.push({
+  stack: [draggedCard],
+  from: removed ? "tableau" : "waste",
+  fromIndex: removed ? tableau.findIndex(col => col.includes(draggedCard)) : -1,
+  to: "foundation",
+  toIndex: i - 1
 });
 
+renderTableau(tableau);
+renderWaste(waste);
+renderFoundations();
+checkWin();
 
-function undoLastMove(){
-  if(moveHistory.length===0) return;
+    });
+  }
+
+
+}
+ let moveHistory = [];
+
+// Example: moving a card
+function moveCard(card, fromPile, toPile) {
+  // Remove card from source
+  fromPile.pop();
+  // Add card to destination
+  toPile.push(card);
+
+  // Save move for undo
+  moveHistory.push({
+  stack: [draggedCard],
+  from: removed ? "tableau" : "waste",   // where the card came from
+  fromIndex: removed ? tableau.findIndex(col => col.includes(draggedCard)) : -1,
+  to: "foundation",
+  toIndex: i - 1
+});
+
+}
+
+// Undo last move
+function undoLastMove() {
+  if (!moveHistory || moveHistory.length === 0) return;
+
   const lastMove = moveHistory.pop();
+  const { stack, from, fromIndex, to, toIndex, flipped, flippedCard } = lastMove;
 
-
-  if(typeof lastMove.to==='number'){
-    tableau[lastMove.to].splice(tableau[lastMove.to].length - lastMove.stack.length, lastMove.stack.length);
-  } else if(lastMove.to==='waste'){
-    waste.splice(waste.length - lastMove.stack.length, lastMove.stack.length);
+  // 1) Remove the moved cards from destination
+  if (to === "tableau") {
+    // remove last `stack.length` cards from that tableau column
+    const col = tableau[toIndex];
+    col.splice(col.length - stack.length, stack.length);
+  } else if (to === "foundation") {
+    const f = foundationPiles[toIndex];
+    f.splice(f.length - stack.length, stack.length);
+  } else if (to === "waste") {
+    waste.splice(waste.length - stack.length, stack.length);
+  } else if (to === "stock") {
+    // if a move somehow went to stock, remove them from front
+    stock.splice(0, stack.length);
   }
 
-  if(lastMove.from===-1){
-    waste = waste.concat(lastMove.stack);
-  } else if(lastMove.from==='stock'){
-    stock = lastMove.stack.concat(stock);
-  } else if(typeof lastMove.from==='number'){
-    tableau[lastMove.from] = tableau[lastMove.from].concat(lastMove.stack);
+  // 2) Return cards to their original source
+  if (from === "tableau") {
+    // put them back on top of that tableau column
+    tableau[fromIndex] = tableau[fromIndex].concat(stack);
+
+    // If the move had flipped a card behind, flip it back down
+    if (flipped && flippedCard) {
+      flippedCard.faceUp = false;
+    }
+  } else if (from === "waste") {
+    waste = waste.concat(stack);
+  } else if (from === "stock") {
+    // put back to front of stock (preserve order)
+    stock = stack.concat(stock);
+  } else if (from === "foundation") {
+    foundationPiles[fromIndex] = foundationPiles[fromIndex].concat(stack);
   }
 
+  // 3) Re-render everything
   renderTableau(tableau);
+  renderStock(stock);
   renderWaste(waste);
   renderFoundations();
 }
 
-document.getElementById("undoBtn").addEventListener("click", undoLastMove);
 
-function setupFoundationDrops(){
-  for(let i=1;i<=4;i++){
-    const fd = document.getElementById(`foundation-${i}`);
-    fd.addEventListener('dragover', e=>e.preventDefault());
-    fd.addEventListener('drop', e=>{
-      e.preventDefault();
-      if(!draggedCard) return;
-      const pile = foundationPiles[i-1];
-      if(pile.length===0 && draggedCard.number!=='A') return;
-      if(pile.length>0){
-        const top = pile[pile.length-1];
-        if(top.face!==draggedCard.face) return;
-        if(numbers.indexOf(draggedCard.number)!==numbers.indexOf(top.number)+1) return;
-      }
-      let removed=false;
-      for(let c=0;c<7;c++){
-        const idx = tableau[c].indexOf(draggedCard);
-        if(idx!==-1){
-          tableau[c].splice(idx,1);
-          if(tableau[c].length>0){
-            const last=tableau[c][tableau[c].length-1];
-            if(!last.faceUp) last.faceUp=true;
-          }
-          removed=true;
-          break;
-        }
-      }
-      if(!removed){
-        const idx=waste.indexOf(draggedCard);
-        if(idx!==-1) waste.splice(idx,1);
-      }
-      pile.push(draggedCard);
-      renderTableau(tableau);
-      renderWaste(waste);
-      renderFoundations();
-      checkWin();
-    });
-  }
-}
-let gameWon=false;
-function checkWin(){
-  if(!gameWon && foundationPiles.every(p=>p.length===13)){
-    gameWon=true;
-    document.getElementById("winPopup").style.display="flex";
-    setTimeout(()=>{
-      document.getElementById("winPopup").style.display="none";
-      restartGame();
-    },5000);
-  }
-}
 
-function restartGame(){
-  gameWon=false;
-  document.getElementById("winPopup").style.display="none";
-  window.onload=function(){
-    renderTableau(tableau);
-    renderStock(stock);
-    renderWaste(waste);
-    renderFoundations();
-    setupFoundationDrops();
-  }
-}
-let timerInterval = null;
-let secondsElapsed = 0;
- 
-function updateTimerDisplay() {
-    const mins = Math.floor(secondsElapsed / 60);
-    const secs = secondsElapsed % 60;
-    document.getElementById("timerDisplay").textContent =
-        `⏱️ ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-}
- 
-function startTimer() {
-    if (timerInterval) return;  // Prevent multiple intervals
-    timerInterval = setInterval(() => {
-        secondsElapsed++;
-        updateTimerDisplay();
-    }, 1000);
-}
- 
-function stopTimer() {
-    if (timerInterval) {
-        clearInterval(timerInterval);
-        timerInterval = null;
-    }
-}
- 
-function resetTimer() {
-    stopTimer();
-    secondsElapsed = 0;
-    updateTimerDisplay();
-}
- 
+
+// Example: button
+const undoBtn = document.getElementById("undoBtn");
+undoBtn.addEventListener("click", undoLastMove);
+
+
 window.onload = function () {
-    // Your existing render calls
-    renderTableau(tableau);
-    renderStock(stock);
-    renderWaste(waste);
-    renderFoundations();
-    setupFoundationDrops();
-    // Timer start/reset here
-    resetTimer();
-    startTimer();
+  renderTableau(tableau);
+  renderStock(stock);
+  renderWaste(waste);
+  renderFoundations();
+  setupFoundationDrops();
 };
- 
-function restartGame() {
-    gameWon = false;
-    document.getElementById("winPopup").style.display = "none";
-    resetTimer();
-    // You'll want to call your existing initialization logic here:
-    window.onload();
-    startTimer();
-}
- 
-function checkWin() {
-    if (!gameWon && foundationPiles.every(p => p.length === 13)) {
-        gameWon = true;
-        stopTimer();
-        document.getElementById("winPopup").style.display = "flex";
-        setTimeout(() => {
-            document.getElementById("winPopup").style.display = "none";
-            restartGame();
-        }, 5000);
-    }
-}
